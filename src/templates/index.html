@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+<button type="button">Click Me!</button>
+
+<ul class="list-group">
+    {% for link_object in link_objects %}
+    {% if  link_object.status == 200 %}
+    <li class="list-group-item list-group-item-success">{{ link_object.link }}  (status code: {{ link_object.status }})</li>
+    {% elif link_object.status is not None %}
+    <li class="list-group-item list-group-item-danger">{{ link_object.link }}   (status code: {{ link_object.status }})</li>
+    {% else %}
+    <li class="list-group-item">{{ link_object.link }}  (not checked)</li>
+    {% endif %}
+    {% endfor %}
+</ul>
+
+{% block javascript %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    alert("Спасибо, что обратились к нам ");
+    $("button").click(function (e) {
+        e.preventDefault();
+            // создаем AJAX-вызов
+        $.ajax({
+            type: "GET",
+            url: "{% url 'url_checker:check_link' link_id=1 %}",
+            // если успешно, то
+            success: function (response) {
+            alert("Спасибо, что обратились к нам " + response.status_code);
+            },
+            // если ошибка, то
+            error: function (response) {
+                alert(response.responseJSON.errors);
+                console.log(response.responseJSON.errors)
+            }
+        });
+        return false;
+    })
+</script>
+{% endblock javascript %}
+</body>
+</html>
